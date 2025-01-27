@@ -10,13 +10,15 @@ Il permet de lister plusieurs entreprises, et d'en voir leur bureaux et employé
 - MariaDB 11
 - Slim 4
 - Eloquent 11
+- Vite (pour la gestion des assets)
 
-## Préréquis pour une installation local
+## Préréquis pour une installation locale
 - Docker
 - Docker compose
 - Git
+- Node.js (pour le développement front-end)
 
-## Installation local
+## Installation locale
 1) Cloner le projet
 
 2) Copier le fichier .env.example en .env, et l'alimenter 
@@ -24,15 +26,33 @@ Il permet de lister plusieurs entreprises, et d'en voir leur bureaux et employé
 cp .env.example .env
 ```
 
-3) Installer les dépendances  
+3) Installer les dépendances PHP et Node.js
 ```bash
+# Dépendances PHP
 docker compose run --rm php composer install
+
+# Dépendances Node.js
+npm install
 ```
 
-4) Lancer le container  
+4) Compiler les assets
+```bash
+# Pour le développement (avec hot reload)
+npm run dev
+
+# Pour la production
+npm run build
+```
+
+5) Lancer le container  
 ```bash
 docker compose up
 ```
+
+6) Accéder à l'application
+L'application est disponible sur :
+- http://localhost:8080 - Application web
+- http://localhost:5173 - Serveur de développement Vite (uniquement en mode développement)
 
 ## (re)Créer et alimenter la base de données
 Il faut que le container database soit lancé pour effectuer ces commandes.
@@ -48,16 +68,26 @@ docker compose exec php bin/console db:populate
 ```
 
 ## Structure du projet
-- **bin** : Contient le script permettant de lancer des commandes. 
-- **config** : Contient les fichiers de configuration de l'application.
+- **assets** : Contient les fichiers source JS et CSS
+- **bin** : Contient le script permettant de lancer des commandes
+- **config** : Contient les fichiers de configuration de l'application
 - **public** : Contient les fichiers accessibles publiquement
-    - **assets** : Contient les fichiers css, js, images, etc.
+    - **build** : Contient les assets compilés par Vite
 - **src** : Contient le code source de l'application
     - **Console** : Contient les commandes de l'application
     - **Controller** : Contient les contrôleurs de l'application
     - **Models** : Contient les modèles de l'application
     - **Twig** : Contient les extension Twig de l'application
 - **view** : Contient les fichiers .twig de l'application
+
+## Développement front-end
+Le projet utilise Vite pour la gestion des assets (JS et CSS). Les fichiers source se trouvent dans le dossier `assets` et sont compilés dans `public/build`.
+
+### Commandes disponibles
+- `npm run dev` : Lance le serveur de développement avec hot reload
+- `npm run build` : Compile les assets pour la production
+- `npm run lint` : Vérifie le code JavaScript avec ESLint
+- `npm run lint:fix` : Corrige automatiquement les erreurs ESLint
 
 ## Exercices
 Voir le fichier [TODO.md](TODO.md)
