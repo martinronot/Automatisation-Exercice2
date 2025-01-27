@@ -14,6 +14,54 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PopulateDatabaseCommand extends Command
 {
     private App $app;
+    private array $companies = [
+        'TechVision Solutions',
+        'DataCraft Innovations',
+        'CloudPeak Systems',
+        'DigitalEdge Technologies'
+    ];
+    
+    private array $cities = [
+        'France' => [
+            ['Paris', '75000'],
+            ['Lyon', '69000'],
+            ['Marseille', '13000'],
+            ['Bordeaux', '33000'],
+            ['Lille', '59000'],
+            ['Toulouse', '31000']
+        ],
+        'Allemagne' => [
+            ['Berlin', '10115'],
+            ['Munich', '80331'],
+            ['Hambourg', '20095'],
+            ['Francfort', '60311']
+        ]
+    ];
+    
+    private array $jobTitles = [
+        'Développeur Full Stack',
+        'Ingénieur DevOps',
+        'Architecte Solution',
+        'Chef de Projet',
+        'Data Scientist',
+        'Designer UX/UI',
+        'Administrateur Système',
+        'Responsable Sécurité',
+        'Product Owner',
+        'Scrum Master'
+    ];
+
+    private array $firstNames = [
+        'Emma', 'Lucas', 'Léa', 'Hugo', 'Chloé',
+        'Louis', 'Sarah', 'Gabriel', 'Inès', 'Jules',
+        'Anna', 'Thomas', 'Louise', 'Arthur', 'Alice'
+    ];
+
+    private array $lastNames = [
+        'Martin', 'Bernard', 'Dubois', 'Thomas', 'Robert',
+        'Richard', 'Petit', 'Durand', 'Leroy', 'Moreau',
+        'Simon', 'Laurent', 'Lefebvre', 'Michel', 'Garcia'
+    ];
 
     public function __construct(App $app)
     {
@@ -27,7 +75,7 @@ class PopulateDatabaseCommand extends Command
         $this->setDescription('Populate database');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output ): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Populate database...');
 
@@ -40,34 +88,70 @@ class PopulateDatabaseCommand extends Command
         $db->getConnection()->statement("TRUNCATE `companies`");
         $db->getConnection()->statement("SET FOREIGN_KEY_CHECKS=1");
 
+        // Générer 2-4 sociétés
+        $numCompanies = rand(2, 4);
+        $companies = [];
+        $offices = [];
+        $employees = [];
 
-        $db->getConnection()->statement("INSERT INTO `companies` VALUES
-    (1,'Stack Exchange','0601010101','stack@exchange.com','https://stackexchange.com/','https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Verisure_information_technology_department_at_Ch%C3%A2tenay-Malabry_-_2019-01-10.jpg/1920px-Verisure_information_technology_department_at_Ch%C3%A2tenay-Malabry_-_2019-01-10.jpg', now(), now(), null),
-    (2,'Google','0602020202','contact@google.com','https://www.google.com','https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Google_office_%284135991953%29.jpg/800px-Google_office_%284135991953%29.jpg?20190722090506',now(), now(), null)
-        ");
+        for ($i = 1; $i <= $numCompanies; $i++) {
+            $companyName = $this->companies[$i - 1];
+            $phone = '0' . rand(600000000, 699999999);
+            $email = strtolower(str_replace(' ', '.', $companyName)) . '@example.com';
+            $website = 'https://www.' . strtolower(str_replace(' ', '-', $companyName)) . '.com';
+            $image = 'https://picsum.photos/800/600?random=' . $i;
 
-        $db->getConnection()->statement("INSERT INTO `offices` VALUES
-    (1,'Bureau de Nancy','1 rue Stanistlas','Nancy','54000','France','nancy@stackexchange.com',NULL,1, now(), now()),
-    (2,'Burea de Vandoeuvre','46 avenue Jeanne d\'Arc','Vandoeuvre','54500','France',NULL,NULL,1, now(), now()),
-    (3,'Siege sociale','2 rue de la primatiale','Paris','75000','France',NULL,NULL,2, now(), now()),
-    (4,'Bureau Berlinois','192 avenue central','Berlin','12277','Allemagne',NULL,NULL,2, now(), now())
-        ");
+            $companies[] = "($i,'$companyName','$phone','$email','$website','$image', now(), now(), null)";
 
-        $db->getConnection()->statement("INSERT INTO `employees` VALUES
-     (1,'Camille','La Chenille',1,'camille.la@chenille.com',NULL,'Ingénieur', now(), now()),
-     (2,'Albert','Mudhat',2,'albert.mudhat@aqume.net',NULL,'Superviseur', now(), now()),
-     (3,'Sylvie','Tesse',3,'sylive.tesse@factice.local',NULL,'PDG', now(), now()),
-     (4,'John','Doe',4,'john.doe@generique.org',NULL,'Testeur', now(), now()),
-     (5,'Jean','Bon',1,'jean@test.com',NULL,'Developpeur', now(), now()),
-     (6,'Anais','Dufour',2,'anais@aqume.net',NULL,'DBA', now(), now()),
-     (7,'Sylvain','Poirson',3,'sylvain@factice.local',NULL,'Administrateur réseau', now(), now()),
-     (8,'Telma','Thiriet',4,'telma@generique.org',NULL,'Juriste', now(), now())
-        ");
+            // Générer 2-3 bureaux par société
+            $numOffices = rand(2, 3);
+            $officeId = count($offices) + 1;
 
-        $db->getConnection()->statement("update companies set head_office_id = 1 where id = 1;");
-        $db->getConnection()->statement("update companies set head_office_id = 3 where id = 2;");
+            for ($j = 1; $j <= $numOffices; $j++) {
+                $country = array_rand($this->cities);
+                $cityData = $this->cities[$country][array_rand($this->cities[$country])];
+                $city = $cityData[0];
+                $zipCode = $cityData[1];
+                $address = rand(1, 100) . ' rue ' . $this->lastNames[array_rand($this->lastNames)];
+                $officeName = "Bureau de $city";
+                $officeEmail = strtolower("$city@" . str_replace(' ', '-', $companyName) . ".com");
 
-        $output->writeln('Database created successfully!');
+                $offices[] = "($officeId,'$officeName','$address','$city','$zipCode','$country','$officeEmail',NULL,$i, now(), now())";
+
+                // Générer 3-4 employés par bureau
+                $numEmployees = rand(3, 4);
+                for ($k = 1; $k <= $numEmployees; $k++) {
+                    $employeeId = count($employees) + 1;
+                    $firstName = $this->firstNames[array_rand($this->firstNames)];
+                    $lastName = $this->lastNames[array_rand($this->lastNames)];
+                    $jobTitle = $this->jobTitles[array_rand($this->jobTitles)];
+                    $empEmail = strtolower("$firstName.$lastName@" . str_replace(' ', '-', $companyName) . ".com");
+
+                    $employees[] = "($employeeId,'$firstName','$lastName',$officeId,'$empEmail',NULL,'$jobTitle', now(), now())";
+                }
+
+                $officeId++;
+            }
+        }
+
+        // Insérer les données
+        if (!empty($companies)) {
+            $db->getConnection()->statement("INSERT INTO `companies` VALUES " . implode(',', $companies));
+        }
+        if (!empty($offices)) {
+            $db->getConnection()->statement("INSERT INTO `offices` VALUES " . implode(',', $offices));
+        }
+        if (!empty($employees)) {
+            $db->getConnection()->statement("INSERT INTO `employees` VALUES " . implode(',', $employees));
+        }
+
+        // Définir le siège social pour chaque entreprise
+        for ($i = 1; $i <= $numCompanies; $i++) {
+            $firstOfficeId = $i * 2 - 1; // Premier bureau de chaque entreprise comme siège social
+            $db->getConnection()->statement("update companies set head_office_id = $firstOfficeId where id = $i;");
+        }
+
+        $output->writeln('Database populated successfully!');
         return 0;
     }
 }
