@@ -1,0 +1,15 @@
+parameters:
+    # Niveau d'analyse (0-9, 9 étant le plus strict)
+    level: 5
+
+    # Chemins à analyser
+    paths:
+        - src
+
+    # Exclusions
+    excludePaths:
+        - vendor/*
+        - cache/*
+
+    # Afficher les erreurs avec plus de détails
+    reportUnmatchedIgnoredErrors: false

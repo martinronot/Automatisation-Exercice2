@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ruleset name="PHP_CodeSniffer">
+    <description>Configuration de PHPCS pour le projet</description>
+
+    <!-- Dossiers à analyser -->
+    <file>src/</file>
+
+    <!-- Exclusions -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/cache/*</exclude-pattern>
+
+    <!-- Utiliser PSR-12 comme standard de base -->
+    <rule ref="PSR12"/>
+
+    <!-- Afficher les erreurs avec des couleurs -->
+    <arg name="colors"/>
+
+    <!-- Afficher le progrès -->
+    <arg value="p"/>
+
+    <!-- Ne pas afficher les avertissements -->
+    <arg name="warning-severity" value="0"/>
+</ruleset>

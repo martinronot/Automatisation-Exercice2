@@ -20,7 +20,7 @@ class PopulateDatabaseCommand extends Command
         'CloudPeak Systems',
         'DigitalEdge Technologies'
     ];
-    
+
     private array $cities = [
         'France' => [
             ['Paris', '75000'],
@@ -37,7 +37,7 @@ class PopulateDatabaseCommand extends Command
             ['Francfort', '60311']
         ]
     ];
-    
+
     private array $jobTitles = [
         'Développeur Full Stack',
         'Ingénieur DevOps',
@@ -135,13 +135,13 @@ class PopulateDatabaseCommand extends Command
         }
 
         // Insérer les données
-        if (!empty($companies)) {
+        if (count($companies) > 0) {
             $db->getConnection()->statement("INSERT INTO `companies` VALUES " . implode(',', $companies));
         }
-        if (!empty($offices)) {
+        if (count($offices) > 0) {
             $db->getConnection()->statement("INSERT INTO `offices` VALUES " . implode(',', $offices));
         }
-        if (!empty($employees)) {
+        if (count($employees) > 0) {
             $db->getConnection()->statement("INSERT INTO `employees` VALUES " . implode(',', $employees));
         }
 
