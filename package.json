@@ -9,8 +9,13 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint": "eslint assets/ scripts/",
+    "lint:fix": "eslint assets/ scripts/ --fix",
+    "phpcs": "docker-compose exec -T php ./vendor/bin/phpcs",
+    "phpstan": "docker-compose exec -T php ./vendor/bin/phpstan analyse",
+    "verify": "node scripts/verify-code.js",
+    "check": "npm run lint && npm run phpcs && npm run phpstan",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -26,6 +31,7 @@
   "devDependencies": {
     "@eslint/js": "^9.19.0",
     "eslint": "^9.19.0",
+    "husky": "^9.1.7",
     "vite": "^6.0.11"
   }
 }
